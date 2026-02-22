@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>页面未找到 — 彩虹桥</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/core.css">
+<style>
+body { overflow: hidden; height: 100vh; height: 100dvh; display: flex; align-items: center; justify-content: center; }
+.lost {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.lost-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+.lost-sub {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--white-dim);
+  margin-bottom: 2rem;
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="lost">
+  <div class="lost-title">这颗星还没有亮起</div>
+  <div class="lost-sub">页面未找到</div>
+  <a href="index.html" class="btn">回到星空</a>
+</div>
+</body>
+</html>
