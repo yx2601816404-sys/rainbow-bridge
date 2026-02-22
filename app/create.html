@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>点亮一颗星 — 彩虹桥</title>
+<meta name="description" content="为离开的毛孩子点亮一颗星，写下你们的故事。">
+<meta name="theme-color" content="#0a0a0f">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="css/core.css">
 <style>
@@ -442,6 +444,10 @@ body { overflow: hidden; height: 100vh; height: 100dvh; cursor: none; }
 
   // Step 2: 日期
   document.getElementById('next2').addEventListener('click', () => goTo(3));
+  // Enter on date inputs advances
+  document.getElementById('rDeath').addEventListener('keydown', e => {
+    if (e.key === 'Enter') goTo(3);
+  });
 
   // Step 3: 想说的话
   document.getElementById('next3').addEventListener('click', () => {
