@@ -403,9 +403,14 @@
     tip.style.top = ty + 'px';
   }
 
-  // --- 揭幕（6秒序列）---
-  // 纯黑(0s) → 文字淡入(0-2s) → 停留(2-3s) → 星空渐显(3-5s) → 内容揭幕(5-6s)
+  // --- 三阶段开屏（~6.5秒）---
+  // Phase 1 (0-1.5s): 黑场 → 金色圆环从中心缩放出现
+  // Phase 2 (1.5-3.5s): 圆环急剧放大 + 溶解，星空开始透出
+  // Phase 3 (3.5-5.5s): 文字从模糊/偏移中凝聚成型
+  // Phase 4 (5.5-6.5s): 揭幕层消失，UI 就绪
   function playReveal() {
+    const ring = document.getElementById('revealRing');
+    const textWrap = document.getElementById('revealTextWrap');
     const chars = document.querySelectorAll('.reveal-title .char');
     const sub = document.getElementById('revealSub');
     const line = document.getElementById('revealLine');
@@ -414,66 +419,71 @@
 
     if (!overlay || !main) return;
 
-    // Phase 1 (0-2s): 文字从虚无中浮现 — 逐字淡入 + 去模糊
-    chars.forEach((c, i) => {
-      setTimeout(() => {
-        c.style.transition = 'opacity 1.2s cubic-bezier(0.16,1,0.3,1), filter 1.4s ease';
-        c.style.opacity = '1';
-        c.style.filter = 'blur(0)';
-      }, 400 + i * 300);
-    });
-
-    // Phase 1.5 (1.5s): 副标题淡入
+    // Phase 1 (0.5s): 圆环出现
     setTimeout(() => {
-      if (sub) {
-        sub.style.transition = 'opacity 1.5s ease';
-        sub.style.opacity = '1';
-      }
-    }, 1600);
+      ring.style.transition = 'opacity 0.8s ease, transform 1.2s cubic-bezier(0.16,1,0.3,1)';
+      ring.style.opacity = '1';
+      ring.style.transform = 'scale(1)';
+    }, 500);
 
-    // Phase 2 (2s): 金线展开
+    // Phase 1.5 (1.5s): 圆环脉冲
     setTimeout(() => {
-      if (line) {
-        line.style.transition = 'width 1.8s cubic-bezier(0.16,1,0.3,1)';
-        line.style.width = '120px';
-      }
-    }, 2200);
+      ring.style.transition = 'transform 0.6s cubic-bezier(0.16,1,0.3,1)';
+      ring.style.transform = 'scale(1.15)';
+    }, 1500);
 
-    // Phase 2.5 (2.5s): 版本号
+    // Phase 2 (2s): 圆环急剧放大 + 溶解
     setTimeout(() => {
-      const ver = document.getElementById('revealVer');
-      if (ver) ver.style.opacity = '1';
+      ring.style.transition = 'transform 1.5s cubic-bezier(0.87,0,0.13,1), opacity 1.2s ease';
+      ring.style.transform = 'scale(25)';
+      ring.style.opacity = '0';
+    }, 2000);
+
+    // Phase 2.5 (2.8s): 背景开始变透明，星空透出
+    setTimeout(() => {
+      overlay.style.transition = 'background 2s ease';
+      overlay.style.background = 'rgba(5,5,5,0.85)';
     }, 2800);
 
-    // Phase 3 (3-5s): 文字开始上移，overlay 渐隐，星空渐显
+    // Phase 3 (3.5s): 文字容器出现
     setTimeout(() => {
-      // 文字上移
-      chars.forEach((c, i) => {
-        c.style.transition = 'opacity 1.5s ease, transform 2s cubic-bezier(0.16,1,0.3,1), filter 1s ease';
-        c.style.transform = 'translateY(-20px)';
-        c.style.opacity = '0.3';
-      });
-      if (sub) {
-        sub.style.transition = 'opacity 1.5s ease';
-        sub.style.opacity = '0';
-      }
-      if (line) {
-        line.style.transition = 'opacity 1s ease';
-        line.style.opacity = '0';
-      }
-    }, 3500);
+      textWrap.style.transition = 'opacity 0.5s ease';
+      textWrap.style.opacity = '1';
+    }, 3200);
 
-    // Phase 4 (5s): overlay 完全消失，主内容揭幕
+    // Phase 3 (3.5s): 文字逐字凝聚 — 从偏移+模糊到清晰
+    chars.forEach((c, i) => {
+      setTimeout(() => {
+        c.style.transition = 'opacity 0.8s ease, transform 1s cubic-bezier(0.16,1,0.3,1), filter 1s ease';
+        c.style.opacity = '1';
+        c.style.transform = 'translateY(0)';
+        c.style.filter = 'blur(0)';
+      }, 3500 + i * 200);
+    });
+
+    // Phase 3.5 (4.2s): 副标题 + 金线
     setTimeout(() => {
-      overlay.style.transition = 'opacity 1.5s cubic-bezier(0.4,0,0.2,1)';
+      sub.style.transition = 'opacity 1.2s ease';
+      sub.style.opacity = '1';
+    }, 4200);
+    setTimeout(() => {
+      line.style.transition = 'width 1.5s cubic-bezier(0.16,1,0.3,1)';
+      line.style.width = '100px';
+    }, 4500);
+
+    // Phase 4 (5.5s): 文字淡出，overlay 消失
+    setTimeout(() => {
+      textWrap.style.transition = 'opacity 1s ease';
+      textWrap.style.opacity = '0';
+      overlay.style.transition = 'opacity 1.2s cubic-bezier(0.4,0,0.2,1)';
       overlay.style.opacity = '0';
       overlay.classList.add('done');
       main.classList.add('visible');
-      main.style.transition = 'opacity 1.8s ease';
-    }, 5000);
+      main.style.transition = 'opacity 1.5s ease';
+    }, 5500);
 
-    // Phase 5 (6.5s): 清理
-    setTimeout(() => { overlay.style.display = 'none'; }, 6800);
+    // Cleanup
+    setTimeout(() => { overlay.style.display = 'none'; }, 7000);
   }
 
   // --- 工具 ---
