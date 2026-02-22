@@ -38,7 +38,8 @@ body {
   overflow-x: hidden;
 }
 
-a { color: inherit; text-decoration: none; }
+a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+button { -webkit-tap-highlight-color: transparent; }
 
 /* ===== 动态颗粒纹理 ===== */
 .grain {
@@ -318,6 +319,16 @@ a { color: inherit; text-decoration: none; }
   html, body { cursor: auto; }
   .btn { cursor: pointer; }
   a { cursor: pointer; }
+}
+
+/* ===== 安全区域（刘海屏）===== */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .frame-bl, .frame-br, .bottom-bar {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .progress {
+    bottom: calc(2rem + env(safe-area-inset-bottom));
+  }
 }
 
 /* ===== 无障碍：减少动画 ===== */

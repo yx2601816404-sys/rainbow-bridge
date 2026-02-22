@@ -1,6 +1,6 @@
 /* memorial.css — 纪念馆页面 */
 
-body { overflow-y: auto; height: auto; min-height: 100vh; cursor: none; }
+body { overflow-y: auto; height: auto; min-height: 100vh; min-height: 100dvh; cursor: none; }
 
 .bg-stars {
   position: fixed; inset: 0;
@@ -328,6 +328,9 @@ body { overflow-y: auto; height: auto; min-height: 100vh; cursor: none; }
   .candle-section { flex-direction: column; gap: 1rem; }
   .section { padding: 1.5rem; }
   .wall-form { flex-direction: column; }
-  .back-link, .share-btn { cursor: auto; }
+  .back-link { cursor: auto; padding: 0.5rem 0; }
+  .share-btn { cursor: auto; padding: 0.7rem 1.2rem; min-height: 44px; display: flex; align-items: center; }
+  .candle-btn { cursor: auto; min-height: 44px; }
+  .wall-btn { cursor: auto; min-height: 44px; }
   body { cursor: auto; }
 }
