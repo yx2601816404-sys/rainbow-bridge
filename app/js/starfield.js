@@ -18,6 +18,34 @@
   let hovered = null;
   let time = 0;
 
+  // --- 时间感知氛围 ---
+  // 深夜的星空应该更亮、更深邃。清晨有一丝暖意。
+  function getTimeAtmosphere() {
+    const h = new Date().getHours();
+    // 深夜 (22-4): 星星更亮，背景更深
+    if (h >= 22 || h < 4) return {
+      bgTop: '#050508', bgMid: '#08081a', bgBot: '#0a0a1e',
+      starAlpha: 1.2, nebulaAlpha: 1.3, shootingRate: 0.005,
+    };
+    // 凌晨 (4-6): 一丝暖色在地平线
+    if (h >= 4 && h < 6) return {
+      bgTop: '#06060e', bgMid: '#0a0a16', bgBot: '#1a1018',
+      starAlpha: 1.0, nebulaAlpha: 1.0, shootingRate: 0.004,
+    };
+    // 白天 (6-18): 柔和
+    if (h >= 6 && h < 18) return {
+      bgTop: '#0a0a10', bgMid: '#0c0c18', bgBot: '#0e0e1c',
+      starAlpha: 0.7, nebulaAlpha: 0.6, shootingRate: 0.002,
+    };
+    // 傍晚 (18-22): 渐深
+    return {
+      bgTop: '#08080e', bgMid: '#0a0a18', bgBot: '#0c0c1e',
+      starAlpha: 0.9, nebulaAlpha: 0.9, shootingRate: 0.003,
+    };
+  }
+
+  const atmo = getTimeAtmosphere();
+
   const INFLUENCE = 150;
   const TRAIL_MAX = 20;
   const TIER_CFG = {
@@ -180,7 +208,7 @@
     const t = time * 0.016;
 
     // 随机生成流星
-    if (Math.random() < 0.003) spawnShootingStar();
+    if (Math.random() < atmo.shootingRate) spawnShootingStar();
     updateShootingStars();
 
     // 鼠标速度检测，有移动时添加光迹
@@ -189,12 +217,11 @@
 
     ctx.clearRect(0, 0, W, H);
 
-    // 背景渐变
+    // 背景渐变 — 随时间变化
     const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#08080e');
-    g.addColorStop(0.4, '#0b0b16');
-    g.addColorStop(0.7, '#0c0c18');
-    g.addColorStop(1, '#0f0f1a');
+    g.addColorStop(0, atmo.bgTop);
+    g.addColorStop(0.4, atmo.bgMid);
+    g.addColorStop(1, atmo.bgBot);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
 
@@ -203,7 +230,7 @@
 
     // 装饰星
     for (const s of bgStars) {
-      const alpha = s.a + 0.15 * Math.sin(t * s.sp * 60 + s.ph);
+      const alpha = (s.a + 0.15 * Math.sin(t * s.sp * 60 + s.ph)) * atmo.starAlpha;
       const dx = s.bx - Mouse.x, dy = s.by - Mouse.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < INFLUENCE) {
@@ -403,87 +430,56 @@
     tip.style.top = ty + 'px';
   }
 
-  // --- 三阶段开屏（~6.5秒）---
-  // Phase 1 (0-1.5s): 黑场 → 金色圆环从中心缩放出现
-  // Phase 2 (1.5-3.5s): 圆环急剧放大 + 溶解，星空开始透出
-  // Phase 3 (3.5-5.5s): 文字从模糊/偏移中凝聚成型
-  // Phase 4 (5.5-6.5s): 揭幕层消失，UI 就绪
+  // --- 开屏：安静的光 ---
+  // 不是技术展示。是深夜里一颗星亮起来。
+  // 0-2s: 黑暗中，一颗星慢慢亮起
+  // 2-4s: 文字轻轻浮现
+  // 4-5.5s: 一切渐隐，星空接管
   function playReveal() {
-    const ring = document.getElementById('revealRing');
-    const textWrap = document.getElementById('revealTextWrap');
+    const star = document.getElementById('revealStar');
     const chars = document.querySelectorAll('.reveal-title .char');
     const sub = document.getElementById('revealSub');
-    const line = document.getElementById('revealLine');
     const overlay = document.getElementById('revealOverlay');
     const main = document.getElementById('mainWrap');
 
     if (!overlay || !main) return;
 
-    // Phase 1 (0.5s): 圆环出现
+    // 一颗星亮起
     setTimeout(() => {
-      ring.style.transition = 'opacity 0.8s ease, transform 1.2s cubic-bezier(0.16,1,0.3,1)';
-      ring.style.opacity = '1';
-      ring.style.transform = 'scale(1)';
-    }, 500);
+      star.style.transition = 'opacity 2s ease';
+      star.style.opacity = '1';
+    }, 600);
 
-    // Phase 1.5 (1.5s): 圆环脉冲
+    // 星光扩散
     setTimeout(() => {
-      ring.style.transition = 'transform 0.6s cubic-bezier(0.16,1,0.3,1)';
-      ring.style.transform = 'scale(1.15)';
-    }, 1500);
+      star.style.transition = 'box-shadow 1.5s ease, opacity 1s ease';
+      star.style.boxShadow = '0 0 40px 12px rgba(212,165,116,0.2)';
+    }, 1800);
 
-    // Phase 2 (2s): 圆环急剧放大 + 溶解
-    setTimeout(() => {
-      ring.style.transition = 'transform 1.5s cubic-bezier(0.87,0,0.13,1), opacity 1.2s ease';
-      ring.style.transform = 'scale(25)';
-      ring.style.opacity = '0';
-    }, 2000);
-
-    // Phase 2.5 (2.8s): 背景开始变透明，星空透出
-    setTimeout(() => {
-      overlay.style.transition = 'background 2s ease';
-      overlay.style.background = 'rgba(5,5,5,0.85)';
-    }, 2800);
-
-    // Phase 3 (3.5s): 文字容器出现
-    setTimeout(() => {
-      textWrap.style.transition = 'opacity 0.5s ease';
-      textWrap.style.opacity = '1';
-    }, 3200);
-
-    // Phase 3 (3.5s): 文字逐字凝聚 — 从偏移+模糊到清晰
+    // 文字浮现 — 不是弹入，是像呼吸一样慢慢出现
     chars.forEach((c, i) => {
       setTimeout(() => {
-        c.style.transition = 'opacity 0.8s ease, transform 1s cubic-bezier(0.16,1,0.3,1), filter 1s ease';
+        c.style.transition = 'opacity 1.5s ease';
         c.style.opacity = '1';
-        c.style.transform = 'translateY(0)';
-        c.style.filter = 'blur(0)';
-      }, 3500 + i * 200);
+      }, 2400 + i * 350);
     });
 
-    // Phase 3.5 (4.2s): 副标题 + 金线
+    // 副标题
     setTimeout(() => {
-      sub.style.transition = 'opacity 1.2s ease';
+      sub.style.transition = 'opacity 1.8s ease';
       sub.style.opacity = '1';
-    }, 4200);
-    setTimeout(() => {
-      line.style.transition = 'width 1.5s cubic-bezier(0.16,1,0.3,1)';
-      line.style.width = '100px';
-    }, 4500);
+    }, 3600);
 
-    // Phase 4 (5.5s): 文字淡出，overlay 消失
+    // 一切渐隐，星空接管
     setTimeout(() => {
-      textWrap.style.transition = 'opacity 1s ease';
-      textWrap.style.opacity = '0';
-      overlay.style.transition = 'opacity 1.2s cubic-bezier(0.4,0,0.2,1)';
+      overlay.style.transition = 'opacity 2s cubic-bezier(0.4,0,0.2,1)';
       overlay.style.opacity = '0';
       overlay.classList.add('done');
       main.classList.add('visible');
-      main.style.transition = 'opacity 1.5s ease';
-    }, 5500);
+      main.style.transition = 'opacity 2s ease';
+    }, 5000);
 
-    // Cleanup
-    setTimeout(() => { overlay.style.display = 'none'; }, 7000);
+    setTimeout(() => { overlay.style.display = 'none'; }, 7200);
   }
 
   // --- 工具 ---
