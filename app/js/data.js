@@ -8,7 +8,7 @@ const RainbowBridge = {
   GENESIS: [
     {
       id: 1, name: '小谦', type: 'cat', breed: '布偶猫',
-      birthDate: null, deathDate: '2024-12', duration: '21个月',
+      birthDate: '2023-02', deathDate: '2024-10-20', duration: '约19个月',
       ownerName: '了', message: '你来过这个世界。这就够了。',
       poem: null, photos: [], candles: 1, tier: 'normal',
       createdAt: '2026-02-21', starX: 0.48, starY: 0.38,
