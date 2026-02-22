@@ -272,10 +272,10 @@
 
       // hover 时画名字标签
       if (isH) {
-        ctx.font = '300 11px -apple-system, "Noto Sans SC", sans-serif';
-        ctx.fillStyle = `rgba(237,237,237,0.6)`;
+        ctx.font = '300 12px "Noto Serif SC", serif';
+        ctx.fillStyle = `rgba(237,237,237,0.65)`;
         ctx.textAlign = 'center';
-        ctx.fillText(s.d.name, s.x, s.y - glowR - 6);
+        ctx.fillText(s.d.name, s.x, s.y - glowR - 8);
       }
     }
 

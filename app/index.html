@@ -15,7 +15,7 @@ body { overflow: hidden; height: 100vh; cursor: none; }
   z-index: 0;
 }
 
-/* 揭幕动画 */
+/* ===== 揭幕动画 ===== */
 .reveal-overlay {
   position: fixed; inset: 0;
   z-index: 9000;
@@ -29,43 +29,44 @@ body { overflow: hidden; height: 100vh; cursor: none; }
 .reveal-overlay.done { pointer-events: none; }
 
 .reveal-title {
-  font-size: clamp(2.8rem, 9vw, 7rem);
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 12vw, 9rem);
   font-weight: 200;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.25em;
   overflow: hidden;
   display: flex;
-  gap: 0.05em;
+  gap: 0.02em;
 }
 .reveal-title .char {
   display: inline-block;
-  transform: translateY(110%);
+  transform: translateY(120%);
   opacity: 0;
 }
 .reveal-sub {
-  margin-top: 1.2rem;
-  font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+  margin-top: 1.5rem;
+  font-size: clamp(0.6rem, 1.4vw, 0.8rem);
   font-weight: 300;
-  letter-spacing: 0.5em;
+  letter-spacing: 0.6em;
   color: var(--white-dim);
   opacity: 0;
-  transform: translateY(15px);
+  transform: translateY(20px);
 }
 .reveal-line {
   width: 0; height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  margin-top: 1.8rem;
+  margin-top: 2rem;
 }
 .reveal-ver {
   position: absolute;
   bottom: 3rem;
-  font-size: 0.6rem;
-  letter-spacing: 0.4em;
-  color: var(--white-faint);
+  font-size: 0.55rem;
+  letter-spacing: 0.5em;
+  color: rgba(237,237,237,0.12);
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: opacity 1s ease;
 }
 
-/* 主内容 */
+/* ===== 主内容 ===== */
 .main-wrap {
   position: fixed; inset: 0;
   z-index: 1;
@@ -74,55 +75,68 @@ body { overflow: hidden; height: 100vh; cursor: none; }
 }
 .main-wrap.visible { opacity: 1; visibility: visible; }
 
-/* 搜索 */
-.search-wrap {
+/* ===== 中心内容 ===== */
+.center-content {
   position: fixed;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   z-index: 5;
   text-align: center;
   pointer-events: none;
+  width: 90%;
+  max-width: 600px;
 }
-.search-wrap .hero-text {
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4.5vw, 2.8rem);
   font-weight: 200;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   color: var(--white);
-  margin-bottom: 2rem;
-  opacity: 0.7;
+  margin-bottom: 0.6rem;
+  line-height: 1.4;
+}
+.hero-sub {
+  font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  color: var(--white-dim);
+  margin-bottom: 2.5rem;
+}
+.search-wrap {
+  pointer-events: all;
+  position: relative;
 }
 .search-wrap input {
-  pointer-events: all;
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--border);
   color: var(--white);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 200;
   letter-spacing: 0.1em;
-  padding: 0.5rem 0;
-  width: 240px;
+  padding: 0.6rem 0;
+  width: 220px;
   text-align: center;
   outline: none;
-  transition: border-color 0.3s, width 0.4s var(--ease-out);
+  transition: border-color 0.3s, width 0.5s var(--ease-out);
   cursor: none;
 }
 .search-wrap input:focus {
   border-color: var(--gold);
-  width: 320px;
+  width: 300px;
 }
-.search-wrap input::placeholder { color: var(--white-faint); }
+.search-wrap input::placeholder { color: var(--white-faint); font-weight: 300; }
 
 /* 搜索结果 */
 .search-results {
   pointer-events: all;
-  margin-top: 1rem;
+  margin-top: 0.8rem;
   display: none;
 }
 .search-results.active { display: block; }
 .search-results a {
   display: block;
-  padding: 0.6rem 0;
+  padding: 0.5rem 0;
   font-size: 0.85rem;
   font-weight: 300;
   color: var(--white-dim);
@@ -131,27 +145,28 @@ body { overflow: hidden; height: 100vh; cursor: none; }
 }
 .search-results a:hover { color: var(--gold); }
 .search-results a .sr-breed {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   letter-spacing: 0.15em;
   color: var(--white-faint);
   margin-left: 0.5rem;
 }
 
-/* 星星 tooltip */
+/* ===== 星星 tooltip ===== */
 .star-tip {
   position: fixed;
   z-index: 20;
-  background: rgba(10, 10, 15, 0.85);
-  backdrop-filter: blur(12px);
+  background: rgba(10, 10, 15, 0.88);
+  backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: 2px;
-  padding: 0.8rem 1rem;
+  padding: 0.8rem 1.2rem;
   pointer-events: none;
   display: none;
-  min-width: 100px;
+  min-width: 110px;
 }
 .star-tip .tip-name {
-  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
   font-weight: 300;
   letter-spacing: 0.1em;
   margin-bottom: 0.25rem;
@@ -167,72 +182,99 @@ body { overflow: hidden; height: 100vh; cursor: none; }
   margin-top: 0.2rem;
 }
 
-/* 底部 */
+/* ===== 底部 ===== */
 .bottom-bar {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 10;
-  padding: 1.8rem 3rem;
+  padding: 2rem 3rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
 }
 .bottom-count {
-  font-size: 0.6rem;
-  letter-spacing: 0.3em;
+  font-size: 0.55rem;
+  letter-spacing: 0.35em;
   color: var(--white-faint);
   text-transform: uppercase;
 }
 .bottom-cta {
-  font-size: 0.6rem;
-  letter-spacing: 0.25em;
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
   color: var(--gold-dim);
   text-transform: uppercase;
-  transition: color 0.3s;
+  transition: color 0.3s, letter-spacing 0.4s var(--ease-out);
   cursor: none;
 }
-.bottom-cta:hover { color: var(--gold); }
+.bottom-cta:hover {
+  color: var(--gold);
+  letter-spacing: 0.4em;
+}
 
-/* 浮动背景文字 */
+/* ===== 浮动背景文字 ===== */
 .bg-text {
   position: fixed;
+  font-family: var(--font-display);
   font-weight: 200;
   letter-spacing: 0.3em;
-  color: rgba(255,255,255,0.02);
-  font-size: clamp(3rem, 10vw, 8rem);
+  color: rgba(255,255,255,0.015);
+  font-size: clamp(3rem, 11vw, 9rem);
   white-space: nowrap;
   z-index: 0;
   pointer-events: none;
   user-select: none;
 }
-.bg-text.t1 { top: 12%; left: -3%; }
-.bg-text.t2 { bottom: 10%; right: -3%; }
+.bg-text.t1 { top: 10%; left: -5%; }
+.bg-text.t2 { bottom: 8%; right: -5%; }
 
-/* 提示文字 */
-.hint-text {
+/* ===== 左侧装饰线 ===== */
+.side-line {
   position: fixed;
-  bottom: 5rem;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 3rem;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 5;
-  font-size: 0.55rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+.side-line .line {
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, var(--border), transparent);
+}
+.side-line .dot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+}
+
+/* ===== 右侧滚动提示 ===== */
+.scroll-hint {
+  position: fixed;
+  right: 3rem;
+  bottom: 50%;
+  z-index: 5;
+  writing-mode: vertical-rl;
+  font-size: 0.5rem;
   letter-spacing: 0.3em;
   color: var(--white-faint);
   text-transform: uppercase;
-  animation: hintPulse 3s ease-in-out infinite;
+  animation: hintFloat 3s ease-in-out infinite;
 }
-@keyframes hintPulse {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 0.5; }
+@keyframes hintFloat {
+  0%, 100% { opacity: 0.2; transform: translateY(0); }
+  50% { opacity: 0.45; transform: translateY(-5px); }
 }
 
 @media (max-width: 768px) {
   .bottom-bar { padding: 1.2rem 1.5rem; }
   .search-wrap input { width: 180px; cursor: auto; }
-  .search-wrap input:focus { width: 220px; }
+  .search-wrap input:focus { width: 240px; }
   .search-results a { cursor: auto; }
   .bottom-cta { cursor: auto; }
-  .hint-text { display: none; }
+  .side-line, .scroll-hint { display: none; }
   body { cursor: auto; }
 }
 </style>
@@ -278,10 +320,19 @@ body { overflow: hidden; height: 100vh; cursor: none; }
   <div class="bg-text t1" id="bgT1">RAINBOW BRIDGE</div>
   <div class="bg-text t2" id="bgT2">永远的陪伴</div>
 
-  <div class="search-wrap">
-    <div class="hero-text">每一颗星，都是一次陪伴</div>
-    <input type="text" id="searchInput" placeholder="搜索名字..." autocomplete="off">
-    <div class="search-results" id="searchResults"></div>
+  <div class="side-line">
+    <div class="line"></div>
+    <div class="dot"></div>
+    <div class="line"></div>
+  </div>
+
+  <div class="center-content">
+    <h1 class="hero-title">每一颗星，都是一次陪伴</h1>
+    <p class="hero-sub">点击星星，走进他们的故事</p>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="搜索名字..." autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+    </div>
   </div>
 
   <div class="star-tip" id="starTip">
@@ -290,7 +341,7 @@ body { overflow: hidden; height: 100vh; cursor: none; }
     <div class="tip-candles"></div>
   </div>
 
-  <div class="hint-text">点击星星查看纪念馆</div>
+  <div class="scroll-hint">探 索 星 空</div>
 
   <div class="bottom-bar">
     <div class="bottom-count"><span id="totalCount">0</span> 颗星在闪烁</div>
@@ -303,11 +354,10 @@ body { overflow: hidden; height: 100vh; cursor: none; }
 <script src="js/nav.js"></script>
 <script src="js/starfield.js"></script>
 <script>
-// 揭幕版本号
 setTimeout(() => {
   const v = document.getElementById('revealVer');
   if (v) v.style.opacity = '1';
-}, 1800);
+}, 2000);
 </script>
 </body>
 </html>
