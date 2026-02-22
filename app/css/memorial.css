@@ -1,0 +1,329 @@
+/* memorial.css — 纪念馆页面 */
+
+body { overflow-y: auto; height: auto; min-height: 100vh; cursor: none; }
+
+.bg-stars {
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+}
+.bg-stars .star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: rgba(220,220,235,0.4);
+  border-radius: 50%;
+  animation: twk 2.5s ease-in-out infinite;
+}
+@keyframes twk {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.6; }
+}
+
+.mem-container {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.back-link {
+  display: inline-block;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--white-faint);
+  margin-bottom: 3rem;
+  transition: color 0.3s;
+  cursor: none;
+}
+.back-link:hover { color: var(--gold); }
+
+/* 头部 */
+.mem-header { text-align: center; padding: 1rem 0 2rem; }
+
+.mem-avatar {
+  width: 120px; height: 120px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(212,165,116,0.1), rgba(212,165,116,0.03));
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.2rem;
+  position: relative;
+}
+/* 头像光环 */
+.mem-avatar::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,165,116,0.08);
+  animation: avatarPulse 4s ease-in-out infinite;
+}
+@keyframes avatarPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.mem-name {
+  font-size: 2.2rem;
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.4rem;
+}
+
+.mem-dates {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--white-dim);
+  margin-bottom: 0.3rem;
+}
+
+.mem-duration {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--gold-dim);
+}
+
+/* 金线 */
+.gold-line {
+  width: 40px; height: 1px;
+  background: var(--gold);
+  margin: 0 auto 2.5rem;
+  opacity: 0.5;
+}
+
+/* 蜡烛 */
+.candle-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+}
+/* 蜡烛区域底部光晕 */
+.candle-section::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 200px; height: 60px;
+  background: radial-gradient(ellipse, rgba(255,215,0,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.candle-row { display: flex; gap: 0.7rem; }
+.candle {
+  width: 12px; height: 40px;
+  background: linear-gradient(to bottom, #FFF8DC, #DEB887);
+  border-radius: 2px 2px 0 0;
+  position: relative;
+}
+.flame {
+  position: absolute;
+  top: -15px; left: 50%;
+  transform: translateX(-50%);
+  width: 8px; height: 14px;
+  background: linear-gradient(to top, #FF6B35, #FFD700, #FFF8DC);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: flk 0.4s ease-in-out infinite alternate;
+}
+@keyframes flk {
+  0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+  100% { transform: translateX(-50%) scale(1.08) rotate(2deg); }
+}
+.flame-glow {
+  position: absolute;
+  top: -22px; left: 50%;
+  transform: translateX(-50%);
+  width: 24px; height: 24px;
+  background: radial-gradient(circle, rgba(255,215,0,0.35) 0%, transparent 70%);
+  animation: glw 1.5s ease-in-out infinite alternate;
+}
+@keyframes glw { 0% { opacity: 0.4; } 100% { opacity: 1; } }
+
+.candle-info { text-align: center; }
+.candle-num {
+  font-size: 1.8rem;
+  font-weight: 200;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+}
+.candle-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--white-faint);
+}
+.candle-btn { margin-top: 0; }
+
+/* 点亮蜡烛反馈动画 */
+.candle-btn.lit {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* 内容区块 */
+.section {
+  margin-bottom: 2.5rem;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  position: relative;
+}
+.section-label {
+  font-size: 0.55rem;
+  font-weight: 300;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 1.2rem;
+}
+.msg-text {
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 2;
+  color: rgba(255,255,255,0.75);
+}
+.msg-text p { margin-bottom: 0.8rem; }
+.msg-text p:last-child { margin-bottom: 0; }
+
+.poem-text {
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 2.2;
+  color: rgba(255,255,255,0.7);
+  font-style: italic;
+  text-align: center;
+}
+
+/* 时间线 */
+.timeline-section { padding: 2rem 0; margin-bottom: 2.5rem; }
+.timeline-item {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.2rem 0;
+  position: relative;
+}
+.timeline-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.5;
+  margin-top: 0.5rem;
+  flex-shrink: 0;
+}
+.timeline-line {
+  position: absolute;
+  left: 2.5px;
+  top: 1.8rem;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.timeline-item:last-child .timeline-line { display: none; }
+.timeline-date {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--white-faint);
+  margin-bottom: 0.3rem;
+}
+.timeline-text {
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.6);
+}
+
+/* 留言墙 */
+.wall-list { margin-bottom: 1.5rem; }
+.wall-empty {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--white-faint);
+  padding: 1rem;
+}
+.wall-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s;
+}
+.wall-item:last-child { border-bottom: none; }
+.wall-item:hover { background: rgba(255,255,255,0.01); }
+.wall-author {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--white-dim);
+  margin-bottom: 0.3rem;
+}
+.wall-content {
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.7);
+}
+.wall-time {
+  font-size: 0.55rem;
+  color: var(--white-faint);
+  margin-top: 0.3rem;
+}
+.wall-form { display: flex; gap: 1rem; align-items: flex-end; }
+.wall-form .form-textarea { flex: 1; }
+.wall-btn { white-space: nowrap; }
+
+/* 底部 */
+.mem-footer {
+  text-align: center;
+  padding: 3rem 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--white-faint);
+  font-style: italic;
+}
+.mem-footer a {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  font-style: normal;
+  color: var(--white-faint);
+  transition: color 0.3s;
+}
+.mem-footer a:hover { color: var(--gold); }
+
+/* 分享按钮 */
+.share-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.share-btn {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--white-faint);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: color 0.3s, border-color 0.3s;
+  cursor: none;
+}
+.share-btn:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+
+@media (max-width: 600px) {
+  .mem-name { font-size: 1.8rem; }
+  .mem-avatar { width: 90px; height: 90px; font-size: 2.5rem; }
+  .candle-section { flex-direction: column; gap: 1rem; }
+  .section { padding: 1.5rem; }
+  .wall-form { flex-direction: column; }
+  .back-link, .share-btn { cursor: auto; }
+  body { cursor: auto; }
+}

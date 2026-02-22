@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>彩虹桥 — 每一颗星，都是一个名字</title>
+<link rel="stylesheet" href="css/core.css">
+<style>
+body { overflow: hidden; height: 100vh; cursor: none; }
+
+#starCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+}
+
+/* 揭幕动画 */
+.reveal-overlay {
+  position: fixed; inset: 0;
+  z-index: 9000;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+.reveal-overlay.done { pointer-events: none; }
+
+.reveal-title {
+  font-size: clamp(2.8rem, 9vw, 7rem);
+  font-weight: 200;
+  letter-spacing: 0.3em;
+  overflow: hidden;
+  display: flex;
+  gap: 0.05em;
+}
+.reveal-title .char {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+}
+.reveal-sub {
+  margin-top: 1.2rem;
+  font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+  font-weight: 300;
+  letter-spacing: 0.5em;
+  color: var(--white-dim);
+  opacity: 0;
+  transform: translateY(15px);
+}
+.reveal-line {
+  width: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin-top: 1.8rem;
+}
+.reveal-ver {
+  position: absolute;
+  bottom: 3rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  color: var(--white-faint);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+/* 主内容 */
+.main-wrap {
+  position: fixed; inset: 0;
+  z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+}
+.main-wrap.visible { opacity: 1; visibility: visible; }
+
+/* 搜索 */
+.search-wrap {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  text-align: center;
+  pointer-events: none;
+}
+.search-wrap .hero-text {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  color: var(--white);
+  margin-bottom: 2rem;
+  opacity: 0.7;
+}
+.search-wrap input {
+  pointer-events: all;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 200;
+  letter-spacing: 0.1em;
+  padding: 0.5rem 0;
+  width: 240px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.3s, width 0.4s var(--ease-out);
+  cursor: none;
+}
+.search-wrap input:focus {
+  border-color: var(--gold);
+  width: 320px;
+}
+.search-wrap input::placeholder { color: var(--white-faint); }
+
+/* 搜索结果 */
+.search-results {
+  pointer-events: all;
+  margin-top: 1rem;
+  display: none;
+}
+.search-results.active { display: block; }
+.search-results a {
+  display: block;
+  padding: 0.6rem 0;
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--white-dim);
+  transition: color 0.2s;
+  cursor: none;
+}
+.search-results a:hover { color: var(--gold); }
+.search-results a .sr-breed {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--white-faint);
+  margin-left: 0.5rem;
+}
+
+/* 星星 tooltip */
+.star-tip {
+  position: fixed;
+  z-index: 20;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.8rem 1rem;
+  pointer-events: none;
+  display: none;
+  min-width: 100px;
+}
+.star-tip .tip-name {
+  font-size: 0.95rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.25rem;
+}
+.star-tip .tip-meta {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--white-dim);
+}
+.star-tip .tip-candles {
+  font-size: 0.6rem;
+  color: var(--gold-dim);
+  margin-top: 0.2rem;
+}
+
+/* 底部 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 10;
+  padding: 1.8rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.bottom-count {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--white-faint);
+  text-transform: uppercase;
+}
+.bottom-cta {
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  transition: color 0.3s;
+  cursor: none;
+}
+.bottom-cta:hover { color: var(--gold); }
+
+/* 浮动背景文字 */
+.bg-text {
+  position: fixed;
+  font-weight: 200;
+  letter-spacing: 0.3em;
+  color: rgba(255,255,255,0.02);
+  font-size: clamp(3rem, 10vw, 8rem);
+  white-space: nowrap;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+.bg-text.t1 { top: 12%; left: -3%; }
+.bg-text.t2 { bottom: 10%; right: -3%; }
+
+/* 提示文字 */
+.hint-text {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: var(--white-faint);
+  text-transform: uppercase;
+  animation: hintPulse 3s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.5; }
+}
+
+@media (max-width: 768px) {
+  .bottom-bar { padding: 1.2rem 1.5rem; }
+  .search-wrap input { width: 180px; cursor: auto; }
+  .search-wrap input:focus { width: 220px; }
+  .search-results a { cursor: auto; }
+  .bottom-cta { cursor: auto; }
+  .hint-text { display: none; }
+  body { cursor: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="page-transition"></div>
+<div class="cursor-dot" id="cDot"></div>
+<div class="cursor-ring" id="cRing"></div>
+<canvas id="starCanvas"></canvas>
+
+<!-- 揭幕 -->
+<div class="reveal-overlay" id="revealOverlay">
+  <div class="reveal-title" id="revealTitle">
+    <span class="char">彩</span><span class="char">虹</span><span class="char">桥</span>
+  </div>
+  <div class="reveal-sub" id="revealSub">每一颗星，都是一个名字</div>
+  <div class="reveal-line" id="revealLine"></div>
+  <div class="reveal-ver" id="revealVer">v 1 . 0</div>
+</div>
+
+<!-- 主内容 -->
+<div class="main-wrap" id="mainWrap">
+  <nav class="nav">
+    <a href="index.html" class="nav-logo" data-hover>彩虹<span>桥</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" data-hover>星 空</a></li>
+      <li><a href="create.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">纪 念</a></li>
+      <li><a href="about.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">关 于</a></li>
+    </ul>
+    <div class="nav-burger" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <div class="nav-mobile">
+    <a href="index.html">星 空</a>
+    <a href="create.html">纪 念</a>
+    <a href="about.html">关 于</a>
+  </div>
+
+  <div class="bg-text t1" id="bgT1">RAINBOW BRIDGE</div>
+  <div class="bg-text t2" id="bgT2">永远的陪伴</div>
+
+  <div class="search-wrap">
+    <div class="hero-text">每一颗星，都是一次陪伴</div>
+    <input type="text" id="searchInput" placeholder="搜索名字..." autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <div class="star-tip" id="starTip">
+    <div class="tip-name"></div>
+    <div class="tip-meta"></div>
+    <div class="tip-candles"></div>
+  </div>
+
+  <div class="hint-text">点击星星查看纪念馆</div>
+
+  <div class="bottom-bar">
+    <div class="bottom-count"><span id="totalCount">0</span> 颗星在闪烁</div>
+    <a href="create.html" class="bottom-cta" data-hover onclick="event.preventDefault();navigateTo(this.href)">为他/她点亮一颗星 →</a>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/cursor.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/starfield.js"></script>
+<script>
+// 揭幕版本号
+setTimeout(() => {
+  const v = document.getElementById('revealVer');
+  if (v) v.style.opacity = '1';
+}, 1800);
+</script>
+</body>
+</html>

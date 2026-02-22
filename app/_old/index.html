@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>彩虹桥 — 每一颗星，都是一个名字</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+
+  <nav class="top-nav">
+    <div class="nav-logo">🌈 彩虹桥</div>
+    <div class="nav-search">
+      <input type="text" id="searchInput" placeholder="搜索名字..." autocomplete="off">
+    </div>
+    <a href="create.html" class="nav-cta">为他/她点亮一颗星</a>
+  </nav>
+
+  <div id="starTooltip" class="star-tooltip" style="display:none;">
+    <div class="tooltip-name"></div>
+    <div class="tooltip-duration"></div>
+    <div class="tooltip-candles"></div>
+  </div>
+
+  <div id="searchResults" class="search-results" style="display:none;"></div>
+
+  <div class="bottom-info">
+    <span id="totalCount">0</span> 颗星在闪烁 · <a href="about.html">关于我们</a>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/starfield.js"></script>
+</body>
+</html>

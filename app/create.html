@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>为他/她点亮一颗星 — 彩虹桥</title>
+<link rel="stylesheet" href="css/core.css">
+<link rel="stylesheet" href="css/memorial.css">
+<style>
+.create-wrap {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 6rem 1.5rem 4rem;
+  position: relative;
+  z-index: 1;
+}
+.create-title {
+  font-size: 1.6rem;
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+.create-sub {
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--white-dim);
+  margin-bottom: 3rem;
+}
+.form-group { margin-bottom: 2rem; }
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.submit-btn {
+  display: block;
+  width: 100%;
+  margin-top: 2.5rem;
+}
+/* 成功提示 */
+.success-overlay {
+  position: fixed; inset: 0;
+  z-index: 8000;
+  background: rgba(10,10,15,0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s var(--ease-smooth);
+}
+.success-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.success-star {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  animation: starBorn 1s ease-out;
+}
+@keyframes starBorn {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.success-text {
+  font-size: 1.2rem;
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+.success-sub {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--white-dim);
+  margin-bottom: 2rem;
+}
+@media (max-width: 500px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="page-transition active"></div>
+<div class="cursor-dot" id="cDot"></div>
+<div class="cursor-ring" id="cRing"></div>
+<div class="bg-stars" id="bgStars"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo" data-hover onclick="event.preventDefault();navigateTo(this.href)">彩虹<span>桥</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">星 空</a></li>
+    <li><a href="create.html" data-hover>纪 念</a></li>
+    <li><a href="about.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">关 于</a></li>
+  </ul>
+  <div class="nav-burger" aria-label="菜单">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="nav-mobile">
+  <a href="index.html">星 空</a>
+  <a href="create.html">纪 念</a>
+  <a href="about.html">关 于</a>
+</div>
+
+<div class="create-wrap">
+  <h1 class="create-title reveal-blur">为他/她点亮一颗星</h1>
+  <p class="create-sub reveal-blur">填写你们的故事</p>
+
+  <form id="createForm">
+    <div class="form-group reveal-blur">
+      <label class="form-label">他/她的名字</label>
+      <input class="form-input" type="text" id="petName" required placeholder="比如：小谦、豆豆、年糕..." autocomplete="off">
+    </div>
+
+    <div class="form-row reveal-blur">
+      <div class="form-group">
+        <label class="form-label">种类</label>
+        <select class="form-select" id="petType">
+          <option value="cat">猫</option>
+          <option value="dog">狗</option>
+          <option value="rabbit">兔子</option>
+          <option value="hamster">仓鼠</option>
+          <option value="bird">鸟</option>
+          <option value="fish">鱼</option>
+          <option value="turtle">龟</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">品种（可选）</label>
+        <input class="form-input" type="text" id="petBreed" placeholder="如：布偶猫、金毛...">
+      </div>
+    </div>
+
+    <div class="form-row reveal-blur">
+      <div class="form-group">
+        <label class="form-label">出生日期（可选）</label>
+        <input class="form-input" type="text" id="birthDate" placeholder="如：2020-03">
+      </div>
+      <div class="form-group">
+        <label class="form-label">离开日期（可选）</label>
+        <input class="form-input" type="text" id="deathDate" placeholder="如：2024-12">
+      </div>
+    </div>
+
+    <div class="form-group reveal-blur">
+      <label class="form-label">陪伴时长（可选）</label>
+      <input class="form-input" type="text" id="duration" placeholder="如：3年2个月">
+    </div>
+
+    <div class="form-group reveal-blur">
+      <label class="form-label">你想对他/她说的话</label>
+      <textarea class="form-textarea" id="message" placeholder="写下你的思念..."></textarea>
+    </div>
+
+    <div class="form-group reveal-blur">
+      <label class="form-label">你的名字（可选）</label>
+      <input class="form-input" type="text" id="ownerName" placeholder="匿名也可以">
+    </div>
+
+    <button type="submit" class="btn submit-btn reveal-blur" data-hover>点亮这颗星 ✦</button>
+  </form>
+</div>
+
+<!-- 成功提示 -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-star">✦</div>
+  <div class="success-text" id="successName"></div>
+  <div class="success-sub">一颗新的星星亮了</div>
+  <a class="btn" id="successBtn" data-hover>前往纪念馆 →</a>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/cursor.js"></script>
+<script src="js/nav.js"></script>
+<script>
+(function() {
+  // 背景星
+  const bg = document.getElementById('bgStars');
+  for (let i = 0; i < 50; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*2}s;`;
+    bg.appendChild(s);
+  }
+
+  // 揭示
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal-blur').forEach(el => obs.observe(el));
+
+  // 表单
+  RainbowBridge.init();
+  document.getElementById('createForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('petName').value.trim();
+    if (!name) return;
+    const m = RainbowBridge.create({
+      name,
+      type: document.getElementById('petType').value,
+      breed: document.getElementById('petBreed').value.trim() || null,
+      birthDate: document.getElementById('birthDate').value.trim() || null,
+      deathDate: document.getElementById('deathDate').value.trim() || null,
+      duration: document.getElementById('duration').value.trim() || null,
+      ownerName: document.getElementById('ownerName').value.trim() || '匿名',
+      message: document.getElementById('message').value.trim() || null,
+      poem: null, photos: [],
+    });
+
+    // 显示成功动画
+    document.getElementById('successName').textContent = `${name}的星星`;
+    const overlay = document.getElementById('successOverlay');
+    overlay.classList.add('show');
+    document.getElementById('successBtn').onclick = () => navigateTo(`memorial.html?id=${m.id}`);
+  });
+})();
+</script>
+</body>
+</html>

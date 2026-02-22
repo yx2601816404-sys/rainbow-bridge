@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>彩虹桥 · Rainbow Bridge</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a1a;
+  --bg-warm: #0f0e1e;
+  --gold: #FFD700;
+  --gold-dim: rgba(255, 215, 0, 0.15);
+  --gold-soft: rgba(255, 215, 0, 0.6);
+  --text: #e8e4dc;
+  --text-dim: rgba(232, 228, 220, 0.4);
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 215, 0, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,215,0,0.2) transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Serif SC', 'Georgia', serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.2); border-radius: 3px; }
+
+/* Canvas - fixed background */
+#starfield {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Sections base */
+section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+/* ========== SECTION 1: HERO ========== */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  text-align: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  color: var(--text);
+  opacity: 0;
+  transform: translateY(40px);
+  animation: heroFadeUp 2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+  text-shadow: 0 0 80px rgba(255, 215, 0, 0.15);
+}
+
+.hero-title span {
+  display: inline-block;
+  color: var(--gold);
+  font-weight: 400;
+  text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes heroFadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: hintFade 1.5s ease 2.5s forwards;
+}
+
+.scroll-hint .line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--gold-soft));
+  animation: breathe 2.5s ease-in-out infinite;
+}
+
+.scroll-hint .arrow {
+  width: 8px; height: 8px;
+  border-right: 1px solid var(--gold-soft);
+  border-bottom: 1px solid var(--gold-soft);
+  transform: rotate(45deg);
+  animation: arrowBounce 2.5s ease-in-out infinite;
+}
+
+@keyframes hintFade { to { opacity: 1; } }
+@keyframes breathe { 0%, 100% { opacity: 0.3; transform: scaleY(0.8); } 50% { opacity: 1; transform: scaleY(1); } }
+@keyframes arrowBounce { 0%, 100% { transform: rotate(45deg) translateY(0); opacity: 0.3; } 50% { transform: rotate(45deg) translateY(4px); opacity: 1; } }
+
+/* ========== SECTION 2: MEMORIAL CARD ========== */
+.memorial {
+  padding: 10vh 20px;
+  perspective: 1200px;
+}
+
+.memorial-card {
+  position: relative;
+  max-width: 520px;
+  width: 90%;
+  padding: 60px 50px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.03, 0.98, 0.52, 0.99);
+  will-change: transform;
+  box-shadow: 
+    0 0 0 1px rgba(255,215,0,0.03),
+    0 30px 60px -20px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.memorial-card::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px; right: -1px; bottom: -1px;
+  border-radius: 25px;
+  background: linear-gradient(135deg, rgba(255,215,0,0.1), transparent 40%, transparent 60%, rgba(255,215,0,0.05));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.memorial-card:hover::before { opacity: 1; }
+
+/* Card glow on hover */
+.memorial-card .glow {
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,215,0,0.06), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  transform: translate(-50%, -50%);
+}
+
+.memorial-card:hover .glow { opacity: 1; }
+
+.reveal-item {
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(30px);
+  transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-item.visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+.pet-name {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--gold-soft) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pet-info {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: var(--text-dim);
+  letter-spacing: 0.2em;
+  font-weight: 300;
+  margin-bottom: 40px;
+  transition-delay: 0.15s;
+}
+
+.pet-quote {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  color: var(--gold-soft);
+  line-height: 1.8;
+  margin-bottom: 40px;
+  transition-delay: 0.3s;
+  position: relative;
+  padding-left: 20px;
+}
+
+.pet-quote::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 4px; bottom: 4px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  border-radius: 2px;
+}
+
+.candle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition-delay: 0.45s;
+}
+
+.candle-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.12);
+  border-radius: 100px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--gold-soft);
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.candle-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,215,0,0.15), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.candle-btn:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.25);
+  transform: scale(1.03);
+}
+
+.candle-btn:hover::after { opacity: 1; }
+
+.candle-btn:active { transform: scale(0.97); }
+
+.candle-icon {
+  font-size: 1.3rem;
+  display: inline-block;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 0 6px rgba(255,215,0,0.4));
+}
+
+.candle-btn:hover .candle-icon { transform: scale(1.15); }
+
+.candle-count {
+  font-variant-numeric: tabular-nums;
+  min-width: 1.5em;
+  text-align: center;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.candle-count.bump {
+  transform: scale(1.4);
+  color: var(--gold);
+}
+
+/* Floating candle particles */
+.candle-particle {
+  position: absolute;
+  width: 4px; height: 4px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* ========== SECTION 3: CAT CAFE ========== */
+.cafe {
+  padding: 10vh 20px;
+  background: linear-gradient(to bottom, transparent, rgba(20, 18, 35, 0.5));
+}
+
+.section-title {
+  font-size: clamp(2.2rem, 5.5vw, 4rem);
+  font-weight: 200;
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: var(--text-dim);
+  text-align: center;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  margin-bottom: 50px;
+}
+
+.cta-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 40px;
+  background: transparent;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 100px;
+  color: var(--gold);
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cta-btn .btn-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.03));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 100px;
+}
+
+.cta-btn:hover .btn-bg { transform: scaleX(1); }
+
+.cta-btn:hover {
+  border-color: rgba(255, 215, 0, 0.5);
+  padding: 18px 52px;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.08);
+}
+
+.cta-btn .btn-text { position: relative; z-index: 1; }
+
+.cta-btn .btn-arrow {
+  position: relative; z-index: 1;
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 0.8em;
+}
+
+.cta-btn:hover .btn-arrow { transform: translateX(6px); }
+
+/* ========== SECTION 4: RAINBOW BRIDGE ========== */
+.adventure {
+  padding: 10vh 20px;
+}
+
+.rainbow-dots {
+  display: flex;
+  gap: clamp(12px, 3vw, 28px);
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dot-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rainbow-dot {
+  width: clamp(28px, 5vw, 44px);
+  height: clamp(28px, 5vw, 44px);
+  border-radius: 50%;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  box-shadow: 0 0 0 0 transparent;
+}
+
+.rainbow-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dot-wrapper:hover .rainbow-dot {
+  transform: scale(1.25) translateY(-4px);
+}
+
+.dot-wrapper:hover .rainbow-dot::after {
+  border-color: currentColor;
+  inset: -8px;
+  opacity: 0.3;
+}
+
+.dot-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  font-weight: 300;
+}
+
+.dot-wrapper:hover .dot-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== SECTION 5: FOOTER ========== */
+.footer {
+  min-height: 50vh;
+  padding: 10vh 20px;
+}
+
+.footer-dedication {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: var(--gold-soft);
+  letter-spacing: 0.2em;
+  font-weight: 300;
+  margin-bottom: 24px;
+}
+
+.footer-brand {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 0.3em;
+  font-weight: 200;
+}
+
+/* ========== GLOBAL REVEAL ========== */
+.fade-up {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-up.d1 { transition-delay: 0.1s; }
+.fade-up.d2 { transition-delay: 0.25s; }
+.fade-up.d3 { transition-delay: 0.4s; }
+.fade-up.d4 { transition-delay: 0.55s; }
+
+/* ========== MOUSE CURSOR GLOW ========== */
+.cursor-glow {
+  position: fixed;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,215,0,0.03), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  will-change: transform;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .memorial-card { padding: 40px 30px; }
+  .rainbow-dots { gap: 16px; }
+  .dot-label { font-size: 0.65rem; }
+  .scroll-hint { bottom: 40px; }
+}
+
+@media (max-width: 480px) {
+  .memorial-card { padding: 32px 24px; width: 95%; }
+  .cta-btn { padding: 14px 28px; }
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- Section 1: Hero -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">每一颗<span>星</span>，都是一个名字</h1>
+  </div>
+  <div class="scroll-hint">
+    <div class="line"></div>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- Section 2: Memorial Card -->
+<section class="memorial" id="memorial">
+  <div class="memorial-card" id="memorialCard">
+    <div class="glow" id="cardGlow"></div>
+    <div class="reveal-item">
+      <h2 class="pet-name">小谦</h2>
+    </div>
+    <div class="reveal-item pet-info">布偶猫 · 陪伴了21个月</div>
+    <div class="reveal-item pet-quote">"你来过这个世界。这就够了。"</div>
+    <div class="reveal-item candle-row">
+      <button class="candle-btn" id="candleBtn" aria-label="点一支蜡烛">
+        <span class="candle-icon">🕯️</span>
+        <span class="candle-count" id="candleCount">1</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: Cat Cafe -->
+<section class="cafe" id="cafe">
+  <h2 class="section-title fade-up">他们在这里等你</h2>
+  <p class="section-subtitle fade-up d1">领养一只虚拟猫咪，给他一个家</p>
+  <button class="cta-btn fade-up d2" aria-label="进入虚拟猫咖">
+    <span class="btn-bg"></span>
+    <span class="btn-text">进入猫咖</span>
+    <span class="btn-arrow">→</span>
+  </button>
+</section>
+
+<!-- Section 4: Rainbow Bridge Adventure -->
+<section class="adventure" id="adventure">
+  <h2 class="section-title fade-up">彩虹桥的另一端</h2>
+  <p class="section-subtitle fade-up d1">一个美好的世界，等待探索</p>
+  <div class="rainbow-dots fade-up d2" id="rainbowDots"></div>
+</section>
+
+<!-- Section 5: Footer -->
+<section class="footer" id="footer">
+  <p class="footer-dedication fade-up">第一颗星，亮给小谦。</p>
+  <p class="footer-brand fade-up d1">彩虹桥 · Rainbow Bridge</p>
+</section>
+
+<script>
+// ============================================================
+// STARFIELD CANVAS — parallax + mouse ripple + shooting stars
+// ============================================================
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [], mouse = { x: -1000, y: -1000, vx: 0, vy: 0 };
+  let lastMouse = { x: 0, y: 0 };
+  let shootingStars = [];
+  let animId;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function createStars(count) {
+    stars = [];
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        baseX: 0, baseY: 0,
+        r: Math.random() * 1.8 + 0.3,
+        alpha: Math.random() * 0.6 + 0.2,
+        twinkleSpeed: Math.random() * 0.02 + 0.005,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        depth: Math.random() * 0.7 + 0.3, // parallax depth
+      });
+    }
+    stars.forEach(s => { s.baseX = s.x; s.baseY = s.y; });
+  }
+
+  function spawnShootingStar() {
+    if (shootingStars.length > 2) return;
+    const startX = Math.random() * W * 0.8;
+    const startY = Math.random() * H * 0.3;
+    const angle = Math.PI / 6 + Math.random() * Math.PI / 6;
+    const speed = 6 + Math.random() * 6;
+    shootingStars.push({
+      x: startX, y: startY,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      decay: 0.015 + Math.random() * 0.01,
+      trail: [],
+    });
+  }
+
+  function draw(time) {
+    ctx.clearRect(0, 0, W, H);
+
+    // Subtle gradient overlay
+    const grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H) * 0.7);
+    grad.addColorStop(0, 'rgba(15, 12, 40, 0.15)');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Mouse velocity for ripple intensity
+    const dx = mouse.x - lastMouse.x;
+    const dy = mouse.y - lastMouse.y;
+    mouse.vx += (dx - mouse.vx) * 0.1;
+    mouse.vy += (dy - mouse.vy) * 0.1;
+    lastMouse.x = mouse.x;
+    lastMouse.y = mouse.y;
+    const mouseSpeed = Math.sqrt(mouse.vx * mouse.vx + mouse.vy * mouse.vy);
+
+    // Draw stars
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
+      const twinkle = Math.sin(time * 0.001 * s.twinkleSpeed * 60 + s.twinkleOffset) * 0.3 + 0.7;
+
+      // Parallax from mouse
+      const parallaxX = (mouse.x - W / 2) * 0.02 * s.depth;
+      const parallaxY = (mouse.y - H / 2) * 0.02 * s.depth;
+
+      // Ripple: push stars away from mouse
+      const sdx = s.baseX - mouse.x;
+      const sdy = s.baseY - mouse.y;
+      const dist = Math.sqrt(sdx * sdx + sdy * sdy);
+      const rippleRadius = 180 + mouseSpeed * 2;
+      let rippleX = 0, rippleY = 0;
+      if (dist < rippleRadius && dist > 0) {
+        const force = (1 - dist / rippleRadius) * (15 + mouseSpeed * 0.5);
+        rippleX = (sdx / dist) * force;
+        rippleY = (sdy / dist) * force;
+      }
+
+      // Smooth return
+      const targetX = s.baseX + parallaxX + rippleX;
+      const targetY = s.baseY + parallaxY + rippleY;
+      s.x += (targetX - s.x) * 0.08;
+      s.y += (targetY - s.y) * 0.08;
+
+      const alpha = s.alpha * twinkle;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 248, 220, ${alpha})`;
+      ctx.fill();
+
+      // Glow for larger stars
+      if (s.r > 1.2) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 215, 0, ${alpha * 0.08})`;
+        ctx.fill();
+      }
+    }
+
+    // Shooting stars
+    for (let i = shootingStars.length - 1; i >= 0; i--) {
+      const ss = shootingStars[i];
+      ss.trail.push({ x: ss.x, y: ss.y, alpha: ss.life });
+      if (ss.trail.length > 20) ss.trail.shift();
+
+      ss.x += ss.vx;
+      ss.y += ss.vy;
+      ss.life -= ss.decay;
+
+      // Draw trail
+      for (let j = 0; j < ss.trail.length; j++) {
+        const t = ss.trail[j];
+        const a = (j / ss.trail.length) * ss.life * 0.6;
+        const r = (1 - j / ss.trail.length) * 1.5;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 230, 150, ${a})`;
+        ctx.fill();
+      }
+
+      // Head
+      ctx.beginPath();
+      ctx.arc(ss.x, ss.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 248, 220, ${ss.life})`;
+      ctx.fill();
+
+      if (ss.life <= 0) shootingStars.splice(i, 1);
+    }
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  // Mouse / touch
+  function onPointerMove(e) {
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    mouse.x = x;
+    mouse.y = y;
+  }
+
+  window.addEventListener('mousemove', onPointerMove, { passive: true });
+  window.addEventListener('touchmove', onPointerMove, { passive: true });
+
+  window.addEventListener('resize', () => {
+    resize();
+    createStars(getStarCount());
+  });
+
+  function getStarCount() {
+    return Math.min(350, Math.floor(W * H / 4000));
+  }
+
+  resize();
+  createStars(getStarCount());
+  draw(0);
+
+  // Periodic shooting stars
+  setInterval(spawnShootingStar, 4000 + Math.random() * 3000);
+  setTimeout(spawnShootingStar, 2000);
+})();
+
+// ============================================================
+// CURSOR GLOW
+// ============================================================
+(function() {
+  const glow = document.getElementById('cursorGlow');
+  let gx = -500, gy = -500;
+  let tx = -500, ty = -500;
+
+  function update() {
+    gx += (tx - gx) * 0.08;
+    gy += (ty - gy) * 0.08;
+    glow.style.transform = `translate(${gx - 150}px, ${gy - 150}px)`;
+    requestAnimationFrame(update);
+  }
+
+  window.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+  // Hide on mobile
+  if ('ontouchstart' in window) glow.style.display = 'none';
+  update();
+})();
+
+// ============================================================
+// INTERSECTION OBSERVER — scroll reveals
+// ============================================================
+(function() {
+  const fadeEls = document.querySelectorAll('.fade-up');
+  const revealEls = document.querySelectorAll('.reveal-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+  fadeEls.forEach(el => observer.observe(el));
+  revealEls.forEach(el => observer.observe(el));
+})();
+
+// ============================================================
+// MEMORIAL CARD — 3D tilt on mouse
+// ============================================================
+(function() {
+  const card = document.getElementById('memorialCard');
+  const glowEl = document.getElementById('cardGlow');
+  if (!card) return;
+
+  let bounds;
+  const updateBounds = () => { bounds = card.getBoundingClientRect(); };
+
+  card.addEventListener('mouseenter', updateBounds);
+
+  card.addEventListener('mousemove', (e) => {
+    if (!bounds) updateBounds();
+    const x = e.clientX - bounds.left;
+    const y = e.clientY - bounds.top;
+    const centerX = bounds.width / 2;
+    const centerY = bounds.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -6;
+    const rotateY = ((x - centerX) / centerX) * 6;
+
+    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.01)`;
+
+    // Move glow
+    glowEl.style.left = x + 'px';
+    glowEl.style.top = y + 'px';
+  });
+
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+    glowEl.style.opacity = '0';
+  });
+
+  // Touch tilt (device orientation)
+  if (window.DeviceOrientationEvent && 'ontouchstart' in window) {
+    window.addEventListener('deviceorientation', (e) => {
+      if (e.gamma === null) return;
+      const rotateY = Math.max(-8, Math.min(8, e.gamma * 0.3));
+      const rotateX = Math.max(-8, Math.min(8, (e.beta - 45) * 0.3));
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    }, { passive: true });
+  }
+})();
+
+// ============================================================
+// CANDLE BUTTON — click to light
+// ============================================================
+(function() {
+  const btn = document.getElementById('candleBtn');
+  const countEl = document.getElementById('candleCount');
+  let count = 1;
+
+  btn.addEventListener('click', (e) => {
+    count++;
+    countEl.textContent = count;
+    countEl.classList.add('bump');
+    setTimeout(() => countEl.classList.remove('bump'), 300);
+
+    // Spawn floating particles
+    for (let i = 0; i < 6; i++) {
+      const p = document.createElement('div');
+      p.className = 'candle-particle';
+      const rect = btn.getBoundingClientRect();
+      const card = document.getElementById('memorialCard');
+      const cardRect = card.getBoundingClientRect();
+      p.style.left = (rect.left - cardRect.left + rect.width / 2 + (Math.random() - 0.5) * 30) + 'px';
+      p.style.top = (rect.top - cardRect.top + rect.height / 2) + 'px';
+      card.appendChild(p);
+
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2;
+      const speed = 1.5 + Math.random() * 2;
+      const vx = Math.cos(angle) * speed;
+      const vy = Math.sin(angle) * speed;
+      let life = 1;
+      const size = 2 + Math.random() * 3;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+
+      function animate() {
+        life -= 0.02;
+        if (life <= 0) { p.remove(); return; }
+        const cx = parseFloat(p.style.left) + vx;
+        const cy = parseFloat(p.style.top) + vy - 0.5;
+        p.style.left = cx + 'px';
+        p.style.top = cy + 'px';
+        p.style.opacity = life;
+        p.style.transform = `scale(${life})`;
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    }
+  });
+})();
+
+// ============================================================
+// RAINBOW DOTS — 7 regions
+// ============================================================
+(function() {
+  const container = document.getElementById('rainbowDots');
+  const regions = [
+    { color: '#FF6B6B', name: '花瓣谷' },
+    { color: '#FFA94D', name: '暖阳坡' },
+    { color: '#FFD43B', name: '金穗原' },
+    { color: '#69DB7C', name: '翠叶林' },
+    { color: '#4DABF7', name: '碧波湾' },
+    { color: '#748FFC', name: '星蓝峰' },
+    { color: '#DA77F2', name: '紫雾岭' },
+  ];
+
+  regions.forEach((r, i) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'dot-wrapper';
+    wrapper.style.transitionDelay = (i * 0.08) + 's';
+
+    const dot = document.createElement('div');
+    dot.className = 'rainbow-dot';
+    dot.style.background = `radial-gradient(circle at 35% 35%, ${r.color}, ${r.color}88)`;
+    dot.style.boxShadow = `0 0 20px ${r.color}33`;
+    dot.style.color = r.color;
+
+    const label = document.createElement('span');
+    label.className = 'dot-label';
+    label.textContent = r.name;
+
+    wrapper.appendChild(dot);
+    wrapper.appendChild(label);
+    container.appendChild(wrapper);
+  });
+})();
+
+// ============================================================
+// SCROLL-DRIVEN HERO FADE
+// ============================================================
+(function() {
+  const hero = document.getElementById('hero');
+  const heroContent = hero.querySelector('.hero-content');
+  const scrollHint = hero.querySelector('.scroll-hint');
+
+  function onScroll() {
+    const scrollY = window.scrollY;
+    const h = window.innerHeight;
+    const progress = Math.min(scrollY / (h * 0.6), 1);
+
+    heroContent.style.opacity = 1 - progress;
+    heroContent.style.transform = `translateY(${-progress * 60}px) scale(${1 - progress * 0.05})`;
+
+    if (scrollHint) {
+      scrollHint.style.opacity = Math.max(0, 1 - progress * 3);
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+})();
+
+// ============================================================
+// SMOOTH SCROLL HINT CLICK
+// ============================================================
+document.querySelector('.scroll-hint').addEventListener('click', () => {
+  document.getElementById('memorial').scrollIntoView({ behavior: 'smooth' });
+});
+document.querySelector('.scroll-hint').style.cursor = 'pointer';
+
+</script>
+</body>
+</html>

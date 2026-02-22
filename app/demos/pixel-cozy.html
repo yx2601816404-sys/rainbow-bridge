@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌈 彩虹桥 — Pixel Cozy Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --lavender: #9B8EC8;
+    --green: #7EC8A0;
+    --yellow: #F4D35E;
+    --coral: #F78C6B;
+    --bg-dark: #1a1a2e;
+    --bg-card: #2a2a4a;
+    --text-light: #f0e6d3;
+    --text-muted: #a89ec8;
+    --pixel-font: 'Press Start 2P', monospace;
+    --body-font: 'Courier New', 'Noto Sans SC', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--body-font);
+    background: var(--bg-dark);
+    color: var(--text-light);
+    line-height: 1.8;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── Pixel Starfield Background ── */
+  .starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 0;
+    animation: twinkle var(--dur) ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.2; }
+    100% { opacity: 1; }
+  }
+
+  /* ── Pixel Grass Footer ── */
+  .grass-strip {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        var(--green) 0px, var(--green) 8px,
+        #6ab88d 8px, #6ab88d 16px
+      );
+    image-rendering: pixelated;
+    opacity: 0.35;
+  }
+
+  .grass-strip::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px, transparent 8px,
+        var(--green) 8px, var(--green) 16px,
+        transparent 16px, transparent 24px
+      );
+    opacity: 0.5;
+  }
+
+  /* ── Layout ── */
+  .content-wrap {
+    position: relative;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ── Pixel Border Mixin (via box-shadow) ── */
+  .pixel-border {
+    border: 3px solid var(--lavender);
+    box-shadow:
+      3px 3px 0 0 var(--lavender),
+      -1px -1px 0 0 rgba(155,142,200,0.3);
+  }
+
+  .pixel-border-green {
+    border: 3px solid var(--green);
+    box-shadow:
+      3px 3px 0 0 var(--green),
+      -1px -1px 0 0 rgba(126,200,160,0.3);
+  }
+
+  .pixel-border-coral {
+    border: 3px solid var(--coral);
+    box-shadow:
+      3px 3px 0 0 var(--coral),
+      -1px -1px 0 0 rgba(247,140,107,0.3);
+  }
+
+  .pixel-border-yellow {
+    border: 3px solid var(--yellow);
+    box-shadow:
+      3px 3px 0 0 var(--yellow),
+      -1px -1px 0 0 rgba(244,211,94,0.3);
+  }
+
+  /* ── NAV ── */
+  .navbar {
+    background: rgba(26,26,46,0.95);
+    backdrop-filter: blur(4px);
+    border-bottom: 3px solid var(--lavender);
+    padding: 12px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .navbar .container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-family: var(--pixel-font);
+    font-size: 14px;
+    color: var(--yellow);
+    white-space: nowrap;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+    flex-shrink: 0;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 140px;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 8px 12px 8px 32px;
+    background: var(--bg-card);
+    border: 2px solid var(--lavender);
+    color: var(--text-light);
+    font-family: var(--body-font);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-box input::placeholder { color: var(--text-muted); }
+  .search-box input:focus { border-color: var(--yellow); }
+
+  .search-box::before {
+    content: '🔍';
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    pointer-events: none;
+  }
+
+  .btn-pixel {
+    font-family: var(--pixel-font);
+    font-size: 10px;
+    padding: 10px 18px;
+    border: 3px solid;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.1s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .btn-pixel:active {
+    transform: translate(2px, 2px);
+    box-shadow: none !important;
+  }
+
+  .btn-primary {
+    color: var(--bg-dark);
+    background: var(--yellow);
+    border-color: #d4b84e;
+    box-shadow: 3px 3px 0 0 #d4b84e;
+  }
+
+  .btn-primary:hover {
+    background: #f7e07a;
+    box-shadow: 4px 4px 0 0 #d4b84e;
+    transform: translate(-1px, -1px);
+  }
+
+  .btn-secondary {
+    color: var(--text-light);
+    border-color: var(--lavender);
+    box-shadow: 3px 3px 0 0 var(--lavender);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(155,142,200,0.15);
+    box-shadow: 4px 4px 0 0 var(--lavender);
+    transform: translate(-1px, -1px);
+  }
+
+  .btn-green {
+    color: var(--bg-dark);
+    background: var(--green);
+    border-color: #5ea882;
+    box-shadow: 3px 3px 0 0 #5ea882;
+  }
+
+  .btn-green:hover {
+    background: #96d8b6;
+    box-shadow: 4px 4px 0 0 #5ea882;
+    transform: translate(-1px, -1px);
+  }
+
+  .btn-coral {
+    color: var(--bg-dark);
+    background: var(--coral);
+    border-color: #d06a4a;
+    box-shadow: 3px 3px 0 0 #d06a4a;
+  }
+
+  .btn-coral:hover {
+    background: #f9a68b;
+    box-shadow: 4px 4px 0 0 #d06a4a;
+    transform: translate(-1px, -1px);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 48px 0;
+  }
+
+  .section-title {
+    font-family: var(--pixel-font);
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 32px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+  }
+
+  /* ── Memorial Card ── */
+  .memorial-section { padding-top: 56px; }
+
+  .memorial-card {
+    background: var(--bg-card);
+    padding: 32px;
+    max-width: 520px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .memorial-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--lavender), var(--coral), var(--yellow), var(--green));
+  }
+
+  .pet-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: var(--lavender);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    border: 3px solid var(--text-muted);
+    box-shadow: 3px 3px 0 0 rgba(155,142,200,0.5);
+    image-rendering: pixelated;
+    position: relative;
+  }
+
+  .pet-avatar::after {
+    content: '✦';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 14px;
+    color: var(--yellow);
+    animation: twinkle 1.5s ease-in-out infinite alternate;
+  }
+
+  .pet-name {
+    font-family: var(--pixel-font);
+    font-size: 18px;
+    color: var(--yellow);
+    text-align: center;
+    margin-bottom: 4px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+  }
+
+  .pet-breed {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .pet-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: var(--pixel-font);
+    font-size: 20px;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .stat-months .stat-value { color: var(--green); }
+  .stat-candles .stat-value { color: var(--coral); }
+
+  .candle-icon {
+    display: inline-block;
+    animation: flicker 0.8s ease-in-out infinite alternate;
+  }
+
+  @keyframes flicker {
+    0% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 0.9; transform: scale(1.02); }
+  }
+
+  .memorial-quote {
+    text-align: center;
+    font-size: 15px;
+    color: var(--text-light);
+    padding: 16px;
+    border-left: 3px solid var(--yellow);
+    background: rgba(244,211,94,0.05);
+    margin-top: 8px;
+    font-style: italic;
+    line-height: 1.9;
+  }
+
+  .memorial-quote::before { content: '「'; color: var(--yellow); }
+  .memorial-quote::after { content: '」'; color: var(--yellow); }
+
+  .memorial-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Feature Cards Grid ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 16px;
+  }
+
+  .feature-card {
+    background: var(--bg-card);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .feature-card:hover {
+    transform: translate(-2px, -2px);
+  }
+
+  .feature-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  .feature-title {
+    font-family: var(--pixel-font);
+    font-size: 13px;
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .feature-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 4px 10px;
+    border: 2px solid;
+    font-family: var(--body-font);
+  }
+
+  .tag-lavender { border-color: var(--lavender); color: var(--lavender); }
+  .tag-green { border-color: var(--green); color: var(--green); }
+  .tag-coral { border-color: var(--coral); color: var(--coral); }
+  .tag-yellow { border-color: var(--yellow); color: var(--yellow); }
+
+  /* ── Cat Cafe Card ── */
+  .cafe-card .feature-title { color: var(--green); }
+
+  .cafe-cats {
+    display: flex;
+    gap: 12px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .mini-cat {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: rgba(126,200,160,0.1);
+    border: 2px solid var(--green);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .mini-cat:hover {
+    transform: scale(1.15);
+    background: rgba(126,200,160,0.25);
+  }
+
+  /* ── Adventure Card ── */
+  .adventure-card .feature-title { color: var(--coral); }
+
+  .adventure-preview {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    margin: 16px 0;
+  }
+
+  .map-tile {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background: rgba(247,140,107,0.08);
+    border: 1px solid rgba(247,140,107,0.2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .map-tile:hover {
+    background: rgba(247,140,107,0.2);
+    transform: scale(1.05);
+  }
+
+  .map-tile.active {
+    background: rgba(247,140,107,0.25);
+    border-color: var(--coral);
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    text-align: center;
+    padding: 48px 20px 64px;
+    position: relative;
+  }
+
+  .footer-star {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 16px;
+    animation: twinkle 2s ease-in-out infinite alternate;
+  }
+
+  .footer-text {
+    font-family: var(--pixel-font);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    line-height: 2;
+  }
+
+  .footer-divider {
+    width: 120px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--lavender), transparent);
+    margin: 24px auto 0;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .logo { font-size: 11px; }
+    .navbar .container { gap: 10px; }
+    .btn-pixel { font-size: 8px; padding: 8px 12px; }
+    .section-title { font-size: 13px; }
+    .memorial-card { padding: 24px 16px; }
+    .pet-name { font-size: 15px; }
+    .pet-stats { gap: 20px; }
+    .stat-value { font-size: 16px; }
+    .feature-title { font-size: 11px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .footer-text { font-size: 9px; }
+    section { padding: 36px 0; }
+  }
+
+  /* ── Animations ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .fade-in-delay-1 { animation-delay: 0.15s; }
+  .fade-in-delay-2 { animation-delay: 0.3s; }
+  .fade-in-delay-3 { animation-delay: 0.45s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Candle light button ── */
+  .btn-light-candle {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-light-candle::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(244,211,94,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .btn-light-candle:hover::after {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div class="starfield" id="starfield"></div>
+<div class="grass-strip"></div>
+
+<div class="content-wrap">
+
+  <!-- ═══ NAV ═══ -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="logo">🌈 彩虹桥</div>
+      <div class="search-box">
+        <input type="text" placeholder="搜索纪念馆、宠物名..." aria-label="搜索">
+      </div>
+      <button class="btn-pixel btn-primary" aria-label="创建纪念馆">✦ 创建纪念馆</button>
+    </div>
+  </nav>
+
+  <!-- ═══ MEMORIAL CARD ═══ -->
+  <section class="memorial-section">
+    <div class="container">
+      <h2 class="section-title fade-in" style="color: var(--yellow);">✦ 纪念馆 ✦</h2>
+      <div class="memorial-card pixel-border fade-in fade-in-delay-1">
+        <div class="pet-avatar">🐱</div>
+        <h3 class="pet-name">小谦</h3>
+        <p class="pet-breed">布偶猫 · Ragdoll</p>
+        <div class="pet-stats">
+          <div class="stat stat-months">
+            <span class="stat-value">21</span>
+            <span class="stat-label">个月陪伴</span>
+          </div>
+          <div class="stat stat-candles">
+            <span class="stat-value"><span class="candle-icon">🕯️</span> 1</span>
+            <span class="stat-label">盏烛光</span>
+          </div>
+        </div>
+        <div class="memorial-quote">你来过这个世界。这就够了。</div>
+        <div class="memorial-actions">
+          <button class="btn-pixel btn-secondary btn-light-candle" onclick="lightCandle()" aria-label="点一盏烛光">🕯️ 点烛</button>
+          <button class="btn-pixel btn-secondary" aria-label="进入纪念馆">🏠 进入纪念馆</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FEATURES ═══ -->
+  <section>
+    <div class="container">
+      <h2 class="section-title fade-in" style="color: var(--green);">✦ 探索世界 ✦</h2>
+      <div class="features-grid">
+
+        <!-- Cat Cafe -->
+        <div class="feature-card pixel-border-green cafe-card fade-in fade-in-delay-1">
+          <span class="feature-icon">☕</span>
+          <h3 class="feature-title">虚拟猫咖</h3>
+          <p class="feature-desc">
+            一间永远温暖的小店。<br>
+            领养一只虚拟猫咪，给它取名字，看它在窗台上打盹。<br>
+            它会记住你每次来的时间。
+          </p>
+          <div class="cafe-cats">
+            <div class="mini-cat" title="橘猫">🐱</div>
+            <div class="mini-cat" title="黑猫">🐈‍⬛</div>
+            <div class="mini-cat" title="白猫">🐈</div>
+            <div class="mini-cat" title="更多...">✨</div>
+          </div>
+          <div class="feature-tags">
+            <span class="tag tag-green">领养</span>
+            <span class="tag tag-lavender">陪伴</span>
+            <span class="tag tag-yellow">治愈</span>
+          </div>
+          <button class="btn-pixel btn-green" aria-label="进入猫咖">☕ 进入猫咖</button>
+        </div>
+
+        <!-- Adventure -->
+        <div class="feature-card pixel-border-coral adventure-card fade-in fade-in-delay-2">
+          <span class="feature-icon">🗺️</span>
+          <h3 class="feature-title">彩虹桥冒险</h3>
+          <p class="feature-desc">
+            一段放置探索的旅程。<br>
+            你的小伙伴在彩虹桥的另一端冒险，<br>
+            收集星星，遇见老朋友。
+          </p>
+          <div class="adventure-preview">
+            <div class="map-tile">🌿</div>
+            <div class="map-tile">🌸</div>
+            <div class="map-tile active">⭐</div>
+            <div class="map-tile">🌿</div>
+            <div class="map-tile">🏔️</div>
+            <div class="map-tile">🌊</div>
+            <div class="map-tile">🌿</div>
+            <div class="map-tile">🐾</div>
+            <div class="map-tile">🌿</div>
+            <div class="map-tile">🌙</div>
+          </div>
+          <div class="feature-tags">
+            <span class="tag tag-coral">探索</span>
+            <span class="tag tag-yellow">放置</span>
+            <span class="tag tag-lavender">收集</span>
+          </div>
+          <button class="btn-pixel btn-coral" aria-label="开始冒险">🗺️ 开始冒险</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="site-footer fade-in fade-in-delay-3">
+    <span class="footer-star">⭐</span>
+    <p class="footer-text">第一颗星，亮给小谦。</p>
+    <div class="footer-divider"></div>
+  </footer>
+
+</div>
+
+<script>
+  // ── Pixel Starfield ──
+  (function createStars() {
+    const field = document.getElementById('starfield');
+    const count = Math.min(80, Math.floor(window.innerWidth * window.innerHeight / 8000));
+    for (let i = 0; i < count; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const size = Math.random() > 0.85 ? 3 : Math.random() > 0.5 ? 2 : 1;
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 85 + '%';
+      star.style.setProperty('--dur', (1.5 + Math.random() * 3) + 's');
+      star.style.animationDelay = (Math.random() * 3) + 's';
+      // Occasional colored stars
+      if (Math.random() > 0.88) {
+        const colors = ['#9B8EC8', '#7EC8A0', '#F4D35E', '#F78C6B'];
+        star.style.background = colors[Math.floor(Math.random() * colors.length)];
+      }
+      field.appendChild(star);
+    }
+  })();
+
+  // ── Light Candle Interaction ──
+  function lightCandle() {
+    const statEl = document.querySelector('.stat-candles .stat-value');
+    const current = parseInt(statEl.textContent.replace(/[^\d]/g, ''));
+    const next = current + 1;
+    statEl.innerHTML = '<span class="candle-icon">🕯️</span> ' + next;
+
+    // Brief glow effect on the card
+    const card = document.querySelector('.memorial-card');
+    card.style.boxShadow = '0 0 30px rgba(244,211,94,0.4), 3px 3px 0 0 var(--lavender), -1px -1px 0 0 rgba(155,142,200,0.3)';
+    setTimeout(() => {
+      card.style.boxShadow = '';
+    }, 800);
+  }
+
+  // ── Intersection Observer for fade-in ──
+  if ('IntersectionObserver' in window) {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.animationPlayState = 'running';
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      obs.observe(el);
+    });
+  }
+</script>
+</body>
+</html>

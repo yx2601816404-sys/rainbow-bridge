@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关于 — 彩虹桥</title>
+<link rel="stylesheet" href="css/core.css">
+<link rel="stylesheet" href="css/memorial.css">
+<style>
+.about-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 8rem 1.5rem 4rem;
+  position: relative;
+  z-index: 1;
+}
+.about-title {
+  font-size: 1.4rem;
+  font-weight: 200;
+  letter-spacing: 0.2em;
+  margin-bottom: 2.5rem;
+}
+.about-text {
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 2.2;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 2rem;
+}
+.about-text p { margin-bottom: 1.2rem; }
+.about-divider {
+  width: 30px; height: 1px;
+  background: var(--gold);
+  opacity: 0.4;
+  margin: 3rem 0;
+}
+.about-quote {
+  font-size: 1rem;
+  font-weight: 200;
+  line-height: 2.4;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem 0;
+  position: relative;
+}
+.about-quote::before {
+  content: '"';
+  position: absolute;
+  top: -0.5rem; left: 50%;
+  transform: translateX(-50%);
+  font-size: 3rem;
+  color: var(--gold-dim);
+  font-style: normal;
+}
+.about-section-label {
+  font-size: 0.55rem;
+  font-weight: 300;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 1.5rem;
+}
+.about-values {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+.about-value {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: border-color 0.5s;
+}
+.about-value:hover { border-color: var(--border-hover); }
+.about-value-title {
+  font-size: 0.75rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+.about-value-text {
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.5);
+}
+.about-dedication {
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: var(--gold-dim);
+  margin-top: 4rem;
+  text-align: center;
+}
+.about-footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+.about-footer-links a {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--white-faint);
+  transition: color 0.3s;
+}
+.about-footer-links a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="page-transition active"></div>
+<div class="cursor-dot" id="cDot"></div>
+<div class="cursor-ring" id="cRing"></div>
+<div class="bg-stars" id="bgStars"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo" data-hover onclick="event.preventDefault();navigateTo(this.href)">彩虹<span>桥</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">星 空</a></li>
+    <li><a href="create.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">纪 念</a></li>
+    <li><a href="about.html" data-hover>关 于</a></li>
+  </ul>
+  <div class="nav-burger" aria-label="菜单">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="nav-mobile">
+  <a href="index.html">星 空</a>
+  <a href="create.html">纪 念</a>
+  <a href="about.html">关 于</a>
+</div>
+
+<div class="about-wrap">
+  <h1 class="about-title reveal-blur">关于彩虹桥</h1>
+
+  <div class="about-quote reveal-blur">
+    就在天堂的入口处，有一个叫做彩虹桥的地方。<br>
+    当一只和人类有过特别羁绊的动物离开这个世界，<br>
+    他会去到彩虹桥。
+  </div>
+
+  <div class="about-divider reveal-blur"></div>
+
+  <div class="about-text reveal-blur">
+    <p>他们用四只小爪踩遍我们心房的每个角落，然后在某一天安静地离开。</p>
+    <p>彩虹桥是一个为宠物建造的纪念空间。每一只被记住的毛孩子，都会成为星空中的一颗星。你可以为他们点亮蜡烛，写下寄语，让思念有一个安放的地方。</p>
+  </div>
+
+  <div class="about-divider reveal-blur"></div>
+
+  <div class="about-section-label reveal-blur">我 们 相 信</div>
+
+  <div class="about-values">
+    <div class="about-value reveal-blur">
+      <div class="about-value-title">纪念不应该有门槛</div>
+      <div class="about-value-text">基础纪念永远免费。每一份思念都值得被安放。</div>
+    </div>
+    <div class="about-value reveal-blur">
+      <div class="about-value-title">他们是家人，不是"它"</div>
+      <div class="about-value-text">在这里，我们用"他"和"她"称呼每一只宠物。因为他们是家人。</div>
+    </div>
+    <div class="about-value reveal-blur">
+      <div class="about-value-title">爱可以传递</div>
+      <div class="about-value-text">每一笔消费的10%，会变成流浪猫的一顿饭。</div>
+    </div>
+  </div>
+
+  <div class="about-divider reveal-blur"></div>
+
+  <div class="about-dedication reveal-blur">第一颗星，亮给小谦。</div>
+
+  <div class="about-footer-links reveal-blur">
+    <a href="index.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">星空</a>
+    <a href="create.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">点亮一颗星</a>
+  </div>
+</div>
+
+<script src="js/cursor.js"></script>
+<script src="js/nav.js"></script>
+<script>
+(function() {
+  const bg = document.getElementById('bgStars');
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*2}s;`;
+    bg.appendChild(s);
+  }
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal-blur').forEach(el => obs.observe(el));
+})();
+</script>
+</body>
+</html>

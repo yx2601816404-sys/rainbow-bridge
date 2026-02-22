@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>纪念馆 — 彩虹桥</title>
+<link rel="stylesheet" href="css/core.css">
+<link rel="stylesheet" href="css/memorial.css">
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="page-transition active"></div>
+<div class="cursor-dot" id="cDot"></div>
+<div class="cursor-ring" id="cRing"></div>
+
+<!-- 背景星星 (CSS) -->
+<div class="bg-stars" id="bgStars"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo" data-hover onclick="event.preventDefault();navigateTo(this.href)">彩虹<span>桥</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">星 空</a></li>
+    <li><a href="create.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">纪 念</a></li>
+    <li><a href="about.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">关 于</a></li>
+  </ul>
+  <div class="nav-burger" aria-label="菜单">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="nav-mobile">
+  <a href="index.html">星 空</a>
+  <a href="create.html">纪 念</a>
+  <a href="about.html">关 于</a>
+</div>
+
+<div class="mem-container">
+  <a href="index.html" class="back-link" data-hover onclick="event.preventDefault();navigateTo(this.href)">← 回到星空</a>
+
+  <!-- 头部 -->
+  <header class="mem-header reveal-blur" id="memHeader">
+    <div class="mem-avatar" id="memAvatar">🐱</div>
+    <h1 class="mem-name" id="memName"></h1>
+    <p class="mem-dates" id="memDates"></p>
+    <p class="mem-duration" id="memDuration"></p>
+  </header>
+
+  <!-- 分隔线 -->
+  <div class="gold-line reveal-blur"></div>
+
+  <!-- 蜡烛 -->
+  <div class="candle-section reveal-blur">
+    <div class="candle-row">
+      <div class="candle"><div class="flame-glow"></div><div class="flame"></div></div>
+      <div class="candle"><div class="flame-glow"></div><div class="flame"></div></div>
+      <div class="candle"><div class="flame-glow"></div><div class="flame"></div></div>
+    </div>
+    <div class="candle-info">
+      <div class="candle-num" id="candleNum">0</div>
+      <div class="candle-label">人点亮了蜡烛</div>
+    </div>
+    <button class="btn candle-btn" id="candleBtn" data-hover>点亮一支蜡烛</button>
+  </div>
+
+  <!-- 寄语 -->
+  <div class="section reveal-blur" id="msgSection">
+    <div class="section-label">寄 语</div>
+    <div class="msg-text" id="msgText"></div>
+  </div>
+
+  <!-- 纪念诗 -->
+  <div class="section reveal-blur" id="poemSection" style="display:none">
+    <div class="section-label">纪 念 诗</div>
+    <div class="poem-text" id="poemText"></div>
+  </div>
+
+  <!-- 留言墙 -->
+  <div class="section reveal-blur">
+    <div class="section-label">留 言 墙</div>
+    <div id="wallList" class="wall-list"></div>
+    <div class="wall-form">
+      <textarea id="wallInput" class="form-textarea" rows="2" placeholder="写下你想说的话..."></textarea>
+      <button class="btn wall-btn" id="wallBtn" data-hover>发送</button>
+    </div>
+  </div>
+
+  <!-- 分享 -->
+  <div class="share-row reveal-blur">
+    <a class="share-btn" id="shareLink" data-hover>复制链接</a>
+  </div>
+
+  <!-- 底部 -->
+  <footer class="mem-footer reveal-blur">
+    <p>"他们不曾真正离开，只是换了一种方式陪伴"</p>
+    <a href="index.html" data-hover onclick="event.preventDefault();navigateTo(this.href)">彩虹桥</a>
+  </footer>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/cursor.js"></script>
+<script src="js/nav.js"></script>
+<script>
+(function() {
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) { location.href = 'index.html'; return; }
+  RainbowBridge.init();
+  const m = RainbowBridge.getById(id);
+  if (!m) { location.href = 'index.html'; return; }
+
+  // 背景星
+  const bg = document.getElementById('bgStars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*2}s;`;
+    bg.appendChild(s);
+  }
+
+  // 填充
+  const avatarMap = { cat:'🐱', dog:'🐕', rabbit:'🐰', hamster:'🐹', bird:'🐦', fish:'🐟', turtle:'🐢' };
+  document.title = `${m.name}的纪念馆 — 彩虹桥`;
+  document.getElementById('memAvatar').textContent = avatarMap[m.type] || '🌟';
+  document.getElementById('memName').textContent = m.name;
+  document.getElementById('memDates').textContent =
+    m.birthDate && m.deathDate ? `${m.birthDate} — ${m.deathDate}` :
+    m.deathDate ? `卒于 ${m.deathDate}` : '';
+  document.getElementById('memDuration').textContent = m.duration ? `✦ 陪伴了 ${m.duration}` : '';
+  document.getElementById('candleNum').textContent = (m.candles||0).toLocaleString();
+
+  const msgEl = document.getElementById('msgText');
+  if (m.message) {
+    msgEl.innerHTML = m.message.split('\n').map(p => `<p>${p}</p>`).join('');
+  } else {
+    document.getElementById('msgSection').style.display = 'none';
+  }
+
+  if (m.poem) {
+    document.getElementById('poemSection').style.display = '';
+    document.getElementById('poemText').innerHTML = m.poem.split('\n').join('<br>');
+  }
+
+  renderWall();
+
+  // 蜡烛
+  const candleBtn = document.getElementById('candleBtn');
+  candleBtn.addEventListener('click', function() {
+    const u = RainbowBridge.lightCandle(m.id);
+    if (u) document.getElementById('candleNum').textContent = u.candles.toLocaleString();
+    this.textContent = '已点亮 ✦';
+    this.classList.add('lit');
+    setTimeout(() => {
+      this.textContent = '再点一支';
+      this.classList.remove('lit');
+    }, 1800);
+  });
+
+  // 留言
+  document.getElementById('wallBtn').addEventListener('click', () => {
+    const inp = document.getElementById('wallInput');
+    const txt = inp.value.trim();
+    if (!txt) return;
+    RainbowBridge.addMessage(m.id, '匿名访客', txt);
+    inp.value = '';
+    renderWall();
+  });
+
+  // 分享
+  document.getElementById('shareLink').addEventListener('click', () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      const el = document.getElementById('shareLink');
+      el.textContent = '已复制 ✓';
+      setTimeout(() => { el.textContent = '复制链接'; }, 2000);
+    }).catch(() => {});
+  });
+
+  function renderWall() {
+    const msgs = RainbowBridge.getMessages(m.id);
+    const list = document.getElementById('wallList');
+    if (!msgs.length) {
+      list.innerHTML = '<div class="wall-empty">还没有留言，写下第一条吧</div>';
+      return;
+    }
+    list.innerHTML = msgs.map(msg => `
+      <div class="wall-item">
+        <div class="wall-author">${esc(msg.author)}</div>
+        <div class="wall-content">${esc(msg.content)}</div>
+        <div class="wall-time">${msg.time}</div>
+      </div>
+    `).join('');
+  }
+
+  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  // 滚动揭示
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal-blur').forEach(el => obs.observe(el));
+})();
+</script>
+</body>
+</html>
