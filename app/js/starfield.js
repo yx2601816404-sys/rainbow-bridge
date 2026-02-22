@@ -403,7 +403,8 @@
     tip.style.top = ty + 'px';
   }
 
-  // --- 揭幕 ---
+  // --- 揭幕（6秒序列）---
+  // 纯黑(0s) → 文字淡入(0-2s) → 停留(2-3s) → 星空渐显(3-5s) → 内容揭幕(5-6s)
   function playReveal() {
     const chars = document.querySelectorAll('.reveal-title .char');
     const sub = document.getElementById('revealSub');
@@ -413,33 +414,66 @@
 
     if (!overlay || !main) return;
 
+    // Phase 1 (0-2s): 文字从虚无中浮现 — 逐字淡入 + 去模糊
     chars.forEach((c, i) => {
       setTimeout(() => {
-        c.style.transition = 'transform 0.9s cubic-bezier(0.16,1,0.3,1), opacity 0.9s ease';
-        c.style.transform = 'translateY(0)';
+        c.style.transition = 'opacity 1.2s cubic-bezier(0.16,1,0.3,1), filter 1.4s ease';
         c.style.opacity = '1';
-      }, 350 + i * 180);
+        c.style.filter = 'blur(0)';
+      }, 400 + i * 300);
     });
+
+    // Phase 1.5 (1.5s): 副标题淡入
     setTimeout(() => {
       if (sub) {
-        sub.style.transition = 'opacity 1s ease, transform 1s cubic-bezier(0.16,1,0.3,1)';
-        sub.style.opacity = '1'; sub.style.transform = 'translateY(0)';
+        sub.style.transition = 'opacity 1.5s ease';
+        sub.style.opacity = '1';
       }
-    }, 1100);
+    }, 1600);
+
+    // Phase 2 (2s): 金线展开
     setTimeout(() => {
       if (line) {
-        line.style.transition = 'width 1.2s cubic-bezier(0.16,1,0.3,1)';
-        line.style.width = '100px';
+        line.style.transition = 'width 1.8s cubic-bezier(0.16,1,0.3,1)';
+        line.style.width = '120px';
       }
-    }, 1500);
+    }, 2200);
+
+    // Phase 2.5 (2.5s): 版本号
     setTimeout(() => {
-      overlay.style.transition = 'opacity 1.2s cubic-bezier(0.4,0,0.2,1)';
+      const ver = document.getElementById('revealVer');
+      if (ver) ver.style.opacity = '1';
+    }, 2800);
+
+    // Phase 3 (3-5s): 文字开始上移，overlay 渐隐，星空渐显
+    setTimeout(() => {
+      // 文字上移
+      chars.forEach((c, i) => {
+        c.style.transition = 'opacity 1.5s ease, transform 2s cubic-bezier(0.16,1,0.3,1), filter 1s ease';
+        c.style.transform = 'translateY(-20px)';
+        c.style.opacity = '0.3';
+      });
+      if (sub) {
+        sub.style.transition = 'opacity 1.5s ease';
+        sub.style.opacity = '0';
+      }
+      if (line) {
+        line.style.transition = 'opacity 1s ease';
+        line.style.opacity = '0';
+      }
+    }, 3500);
+
+    // Phase 4 (5s): overlay 完全消失，主内容揭幕
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 1.5s cubic-bezier(0.4,0,0.2,1)';
       overlay.style.opacity = '0';
       overlay.classList.add('done');
       main.classList.add('visible');
-      main.style.transition = 'opacity 1.5s ease';
-    }, 2800);
-    setTimeout(() => { overlay.style.display = 'none'; }, 4200);
+      main.style.transition = 'opacity 1.8s ease';
+    }, 5000);
+
+    // Phase 5 (6.5s): 清理
+    setTimeout(() => { overlay.style.display = 'none'; }, 6800);
   }
 
   // --- 工具 ---

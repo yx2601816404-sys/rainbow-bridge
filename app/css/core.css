@@ -194,9 +194,9 @@ a { color: inherit; text-decoration: none; }
 }
 .reveal-blur {
   opacity: 0;
-  filter: blur(10px);
-  transform: translateY(25px);
-  transition: opacity 1.1s, filter 1.1s, transform 1.1s var(--ease-expo);
+  filter: blur(8px);
+  transform: translateY(40px);
+  transition: opacity 1s ease, filter 1s ease, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .reveal-blur.visible {
   opacity: 1;
