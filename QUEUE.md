@@ -5,10 +5,11 @@
 ## 待办
 
 ## 阻塞
-- 部署：gh auth login 未完成（了上次 Ctrl+C 中断了），需要他再跑一次
 
 ## 完成
-- v2.4：小谦碑文定稿（了说"由你来吧"）+ 出生日期修正
+- 部署上线 — GitHub Pages，自动部署，https://yx2601816404-sys.github.io/rainbow-bridge/
+- v2.5：SEO + 可访问性（OG 标签、aria-label、键盘导航）
+- v2.4：小谦碑文定稿 + 出生日期修正
 - v2.3：部署就绪 — 404、favicon、README、Netlify 配置
 - v2.2：移动端适配 — viewport-fit, dvh, safe-area, 44px 触摸目标
 - v2.1：创建纪念馆仪式化 — 5步对话式流程 + 点亮动画
